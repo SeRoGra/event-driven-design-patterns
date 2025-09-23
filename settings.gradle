@@ -6,12 +6,6 @@ pluginManagement {
     }
 }
 
-buildCache {
-    local {
-        directory = new File(rootDir, 'build-cache')
-    }
-}
-
 rootProject.name = 'event-driven-design-patterns'
 
 include ':app-service'
@@ -20,3 +14,5 @@ include ':usecase'
 project(':app-service').projectDir = file('./applications/app-service')
 project(':model').projectDir = file('./domain/model')
 project(':usecase').projectDir = file('./domain/usecase')
+include ':sqs-listener'
+project(':sqs-listener').projectDir = file('./infrastructure/entry-points/sqs-listener')
