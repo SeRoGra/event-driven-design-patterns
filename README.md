@@ -1,47 +1,73 @@
-# Proyecto Base Implementando Clean Architecture
+# Event-Driven Design Patterns
 
-## Antes de Iniciar
+Este proyecto demuestra cómo aplicar **patrones de diseño** (Strategy, Factory, Observer, etc.) en un contexto de **arquitectura orientada a eventos**, usando tecnologías modernas como **AWS SQS**, **Spring WebFlux** y **LocalStack**.
 
-Empezaremos por explicar los diferentes componentes del proyectos y partiremos de los componentes externos, continuando con los componentes core de negocio (dominio) y por último el inicio y configuración de la aplicación.
+Su propósito es servir como **referencia y base de aprendizaje** para arquitecturas desacopladas y altamente escalables, donde los eventos son el centro de la comunicación entre componentes.
 
-Lee el artículo [Clean Architecture — Aislando los detalles](https://medium.com/bancolombia-tech/clean-architecture-aislando-los-detalles-4f9530f35d7a)
+---
 
-# Arquitectura
+## 🚀 Objetivos
 
-![Clean Architecture](https://miro.medium.com/max/1400/1*ZdlHz8B0-qu9Y-QO3AXR_w.png)
+- Mostrar el uso de **patrones de diseño clásicos** (Strategy, Factory, Observer, Adapter…) integrados en un flujo de eventos.
+- Desarrollar componentes desacoplados basados en **arquitectura limpia** (Clean Architecture).
+- Integrar **SQS** como bus de eventos para desacoplar productores y consumidores.
+- Proveer un entorno **local reproducible** usando **LocalStack**.
+- Servir de base para **pruebas de conceptos** y **formación técnica**.
 
-## Domain
+---
 
-Es el módulo más interno de la arquitectura, pertenece a la capa del dominio y encapsula la lógica y reglas del negocio mediante modelos y entidades del dominio.
+## 🗂️ Estructura del Proyecto
 
-## Usecases
+```
+📦event-driven-design-patterns
+┣ 📂applications
+┃ ┗ 📂app-service
+┃ ┃ ┣ 📂src
+┃ ┃ ┃ ┣ 📂main
+┃ ┃ ┃ ┃ ┣ 📂java
+┃ ┃ ┃ ┃ ┃ ┗ 📂co.com.eventdriven.designpatterns
+┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂config
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜[configs and beans]
+┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜MainApplication.java
+┃ ┃ ┃ ┃ ┗ 📂resources
+┃ ┃ ┃ ┃ ┃ ┣ 📜[properties]
+┃ ┃ ┃ ┗ 📂test
+┃ ┃ ┃ ┃ ┗ 📂java
+┃ ┃ ┃ ┃ ┃ ┗ 📂co.com.eventdriven.designpatterns
+┃ ┃ ┗ 📜build.gradle
+┣ 📂deployment
+┃ ┣ 📜[Dockerfile, Pipelines as a code]
+┣ 📂domain
+┃ ┣ 📂model
+┃ ┃ ┣ 📂src
+┃ ┃ ┃ ┣ 📂main
+┃ ┃ ┃ ┃ ┗ 📂java
+┃ ┃ ┃ ┃ ┃ ┗ 📂co.com.eventdriven.designpatterns
+┃ ┃ ┃ ┗ 📂test
+┃ ┃ ┃ ┃ ┗ 📂java
+┃ ┃ ┃ ┃ ┃ ┗ 📂co.com.eventdriven.designpatterns
+┃ ┃ ┗ 📜build.gradle
+┃ ┗ 📂usecase
+┃ ┃ ┣ 📂src
+┃ ┃ ┃ ┣ 📂main
+┃ ┃ ┃ ┃ ┗ 📂java
+┃ ┃ ┃ ┃ ┃ ┗ 📂co.com.eventdriven.designpatterns
+┃ ┃ ┃ ┗ 📂test
+┃ ┃ ┃ ┃ ┗ 📂java
+┃ ┃ ┃ ┃ ┃ ┗ 📂co.com.eventdriven.designpatterns
+┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂usecase
+┃ ┃ ┗ 📜build.gradle
+┣ 📂infrastructure
+┃ ┣ 📂driven-adapters
+┃ ┣ 📂entry-points
+┃ ┗ 📂helpers
+┣ 📜.gitignore
+┣ 📜build.gradle
+┣ 📜gradle.properties
+┣ 📜lombok.config
+┣ 📜main.gradle
+┣ 📜README.md
+┗ 📜settings.gradle
+```
 
-Este módulo gradle perteneciente a la capa del dominio, implementa los casos de uso del sistema, define lógica de aplicación y reacciona a las invocaciones desde el módulo de entry points, orquestando los flujos hacia el módulo de entities.
-
-## Infrastructure
-
-### Helpers
-
-En el apartado de helpers tendremos utilidades generales para los Driven Adapters y Entry Points.
-
-Estas utilidades no están arraigadas a objetos concretos, se realiza el uso de generics para modelar comportamientos
-genéricos de los diferentes objetos de persistencia que puedan existir, este tipo de implementaciones se realizan
-basadas en el patrón de diseño [Unit of Work y Repository](https://medium.com/@krzychukosobudzki/repository-design-pattern-bc490b256006)
-
-Estas clases no puede existir solas y debe heredarse su compartimiento en los **Driven Adapters**
-
-### Driven Adapters
-
-Los driven adapter representan implementaciones externas a nuestro sistema, como lo son conexiones a servicios rest,
-soap, bases de datos, lectura de archivos planos, y en concreto cualquier origen y fuente de datos con la que debamos
-interactuar.
-
-### Entry Points
-
-Los entry points representan los puntos de entrada de la aplicación o el inicio de los flujos de negocio.
-
-## Application
-
-Este módulo es el más externo de la arquitectura, es el encargado de ensamblar los distintos módulos, resolver las dependencias y crear los beans de los casos de use (UseCases) de forma automática, inyectando en éstos instancias concretas de las dependencias declaradas. Además inicia la aplicación (es el único módulo del proyecto donde encontraremos la función “public static void main(String[] args)”.
-
-**Los beans de los casos de uso se disponibilizan automaticamente gracias a un '@ComponentScan' ubicado en esta capa.**
+---
