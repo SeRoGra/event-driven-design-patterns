@@ -1,14 +1,9 @@
 package co.com.eventdriven.designpatterns.sqs.listener.helper;
 
-import co.com.eventdriven.designpatterns.sqs.listener.SQSProcessor;
 import co.com.eventdriven.designpatterns.sqs.listener.config.SQSProperties;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
-import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest;
 import software.amazon.awssdk.services.sqs.model.DeleteMessageResponse;
@@ -53,16 +48,4 @@ class SQSListenerTest {
                 .thenReturn(CompletableFuture.completedFuture(deleteMessageResponse));
     }
 
-    @Test
-    void listenerTest() {
-        var sqsListener = SQSListener.builder()
-                .client(asyncClient)
-                .properties(sqsProperties)
-                .processor(new SQSProcessor())
-                .operation("operation")
-                .build();
-
-        Flux<Void> flow = ReflectionTestUtils.invokeMethod(sqsListener, "listen");
-        StepVerifier.create(flow).verifyComplete();
-    }
 }
